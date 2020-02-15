@@ -59,7 +59,7 @@ func (d *Avx512Digest) Size() int { return Size }
 // BlockSize - Return blocksize of checksum
 func (d Avx512Digest) BlockSize() int { return BlockSize }
 
-// Reset - reset sha digest to its initial values
+// Reset - reset sha Sha256Digest to its initial values
 func (d *Avx512Digest) Reset() {
 	d.a512srv.blocksCh <- blockInput{uid: d.uid, reset: true}
 	d.nx = 0
@@ -67,7 +67,7 @@ func (d *Avx512Digest) Reset() {
 	d.final = false
 }
 
-// Write to digest
+// Write to Sha256Digest
 func (d *Avx512Digest) Write(p []byte) (nn int, err error) {
 
 	if d.final {
@@ -298,7 +298,7 @@ type Avx512Server struct {
 	blocksCh chan blockInput       // Input channel
 	totalIn  int                   // Total number of inputs waiting to be processed
 	lanes    [16]Avx512LaneInfo    // Array with info per lane (out of 16)
-	digests  map[uint64][Size]byte // Map of uids to (interim) digest results
+	digests  map[uint64][Size]byte // Map of uids to (interim) Sha256Digest results
 }
 
 // Avx512LaneInfo - Info for each lane

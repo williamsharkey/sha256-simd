@@ -19,6 +19,7 @@ package sha256
 import (
 	"crypto/sha256"
 	"encoding/binary"
+	"fmt"
 	"hash"
 	"runtime"
 )
@@ -41,16 +42,16 @@ const (
 	init7 = 0x5BE0CD19
 )
 
-// digest represents the partial evaluation of a checksum.
-type digest struct {
+// Sha256Digest represents the partial evaluation of a checksum.
+type Sha256Digest struct {
 	h   [8]uint32
 	x   [chunk]byte
 	nx  int
 	len uint64
 }
 
-// Reset digest back to default
-func (d *digest) Reset() {
+// Reset Sha256Digest back to default
+func (d *Sha256Digest) Reset() {
 	d.h[0] = init0
 	d.h[1] = init1
 	d.h[2] = init2
@@ -101,32 +102,50 @@ func init() {
 // New returns a new hash.Hash computing the SHA256 checksum.
 func New() hash.Hash {
 	if blockfunc != blockfuncGeneric {
-		d := new(digest)
+		d := new(Sha256Digest)
 		d.Reset()
 		return d
 	}
+	fmt.Println("block function generic")
 	// Fallback to the standard golang implementation
 	// if no features were found.
 	return sha256.New()
 }
 
+func WhatBlock() {
+	if blockfunc != blockfuncGeneric {
+		fmt.Println(blockfunc)
+
+	}
+	fmt.Println("block function generic")
+
+}
+
 // Sum256 - single caller sha256 helper
 func Sum256(data []byte) (result [Size]byte) {
-	var d digest
+	var d Sha256Digest
 	d.Reset()
 	d.Write(data)
-	result = d.checkSum()
+	result = d.CheckSum()
+	return
+}
+
+func Sum256Reuse(d Sha256Digest, data []byte) (result [Size]byte) {
+
+	d.Reset()
+	d.Write(data)
+	result = d.CheckSum()
 	return
 }
 
 // Return size of checksum
-func (d *digest) Size() int { return Size }
+func (d *Sha256Digest) Size() int { return Size }
 
 // Return blocksize of checksum
-func (d *digest) BlockSize() int { return BlockSize }
+func (d *Sha256Digest) BlockSize() int { return BlockSize }
 
-// Write to digest
-func (d *digest) Write(p []byte) (nn int, err error) {
+// Write to Sha256Digest
+func (d *Sha256Digest) Write(p []byte) (nn int, err error) {
 	nn = len(p)
 	d.len += uint64(nn)
 	if d.nx > 0 {
@@ -150,15 +169,15 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 }
 
 // Return sha256 sum in bytes
-func (d *digest) Sum(in []byte) []byte {
+func (d *Sha256Digest) Sum(in []byte) []byte {
 	// Make a copy of d0 so that caller can keep writing and summing.
 	d0 := *d
-	hash := d0.checkSum()
+	hash := d0.CheckSum()
 	return append(in, hash[:]...)
 }
 
 // Intermediate checksum function
-func (d *digest) checkSum() (digest [Size]byte) {
+func (d *Sha256Digest) CheckSum() (digest [Size]byte) {
 	n := d.nx
 
 	var k [64]byte
@@ -275,7 +294,7 @@ func (d *digest) checkSum() (digest [Size]byte) {
 	return
 }
 
-func block(dig *digest, p []byte) {
+func block(dig *Sha256Digest, p []byte) {
 	if blockfunc == blockfuncSha {
 		blockShaGo(dig, p)
 	} else if blockfunc == blockfuncAvx2 {
@@ -291,7 +310,7 @@ func block(dig *digest, p []byte) {
 	}
 }
 
-func blockGeneric(dig *digest, p []byte) {
+func blockGeneric(dig *Sha256Digest, p []byte) {
 	var w [64]uint32
 	h0, h1, h2, h3, h4, h5, h6, h7 := dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7]
 	for len(p) >= chunk {
