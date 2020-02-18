@@ -22,7 +22,7 @@ func sha256hash(m []byte) (r [32]byte) {
 
 	blockSha(&h, m)
 	l0 := len(m)
-	l := l0 & (BlockSize - 1)
+	l := l0 & (BlockSize64 - 1)
 	m = m[l0-l:]
 
 	var k [64]byte

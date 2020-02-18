@@ -22,32 +22,32 @@ func blockArmGo(dig *Sha256Digest, p []byte) {}
 
 func blockAvxGo(dig *Sha256Digest, p []byte) {
 
-	h := []uint32{dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7]}
+	h := []uint32{dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7]}
 
 	blockAvx(h[:], p[:], 0, 0, 0, 0)
 
-	dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7] = h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7]
+	dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7] = h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7]
 }
 
 func blockAvx2Go(dig *Sha256Digest, p []byte) {
 
-	h := []uint32{dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7]}
+	h := []uint32{dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7]}
 
 	blockAvx2(h[:], p[:])
 
-	dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7] = h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7]
+	dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7] = h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7]
 }
 
 func blockSsseGo(dig *Sha256Digest, p []byte) {
 
-	h := []uint32{dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7]}
+	h := []uint32{dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7]}
 
 	blockSsse(h[:], p[:], 0, 0, 0, 0)
 
-	dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7] = h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7]
+	dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7] = h[0], h[1], h[2], h[3], h[4], h[5], h[6], h[7]
 }
 
 func blockShaGo(dig *Sha256Digest, p []byte) {
 
-	blockSha(&dig.h, p)
+	blockSha(&dig.H, p)
 }

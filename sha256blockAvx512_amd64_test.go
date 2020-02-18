@@ -43,7 +43,7 @@ func TestGoldenAVX512(t *testing.T) {
 		h512.Reset()
 		h512.Write([]byte(g.in))
 		digest := h512.Sum([]byte{})
-		s := fmt.Sprintf("%x", digest)
+		s := fmt.Sprintf("%Block", digest)
 		if !reflect.DeepEqual(digest, g.out[:]) {
 			t.Fatalf("Sum256 function: sha256(%s) = %s want %s", g.in, s, hex.EncodeToString(g.out[:]))
 		}

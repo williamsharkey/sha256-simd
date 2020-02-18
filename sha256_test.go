@@ -2218,7 +2218,7 @@ func TestGolden(t *testing.T) {
 	if true {
 		blockfunc = blockfuncGeneric
 		for _, g := range golden {
-			s := fmt.Sprintf("%x", Sum256([]byte(g.in)))
+			s := fmt.Sprintf("%Block", Sum256([]byte(g.in)))
 			if Sum256([]byte(g.in)) != g.out {
 				t.Fatalf("Generic: Sum256 function: sha256(%s) = %s want %s", g.in, s, hex.EncodeToString(g.out[:]))
 			}
@@ -2233,7 +2233,7 @@ func TestGolden(t *testing.T) {
 	if sha && ssse3 && sse41 {
 		blockfunc = blockfuncSha
 		for _, g := range golden {
-			s := fmt.Sprintf("%x", Sum256([]byte(g.in)))
+			s := fmt.Sprintf("%Block", Sum256([]byte(g.in)))
 			if Sum256([]byte(g.in)) != g.out {
 				t.Fatalf("SHA: Sum256 function: sha256(%s) = %s want %s", g.in, s, hex.EncodeToString(g.out[:]))
 			}
@@ -2242,7 +2242,7 @@ func TestGolden(t *testing.T) {
 	if avx2 {
 		blockfunc = blockfuncAvx2
 		for _, g := range golden {
-			s := fmt.Sprintf("%x", Sum256([]byte(g.in)))
+			s := fmt.Sprintf("%Block", Sum256([]byte(g.in)))
 			if Sum256([]byte(g.in)) != g.out {
 				t.Fatalf("AVX2: Sum256 function: sha256(%s) = %s want %s", g.in, s, hex.EncodeToString(g.out[:]))
 			}
@@ -2251,7 +2251,7 @@ func TestGolden(t *testing.T) {
 	if avx {
 		blockfunc = blockfuncAvx
 		for _, g := range golden {
-			s := fmt.Sprintf("%x", Sum256([]byte(g.in)))
+			s := fmt.Sprintf("%Block", Sum256([]byte(g.in)))
 			if Sum256([]byte(g.in)) != g.out {
 				t.Fatalf("AVX: Sum256 function: sha256(%s) = %s want %s", g.in, s, hex.EncodeToString(g.out[:]))
 			}
@@ -2260,7 +2260,7 @@ func TestGolden(t *testing.T) {
 	if ssse3 {
 		blockfunc = blockfuncSsse
 		for _, g := range golden {
-			s := fmt.Sprintf("%x", Sum256([]byte(g.in)))
+			s := fmt.Sprintf("%Block", Sum256([]byte(g.in)))
 			if Sum256([]byte(g.in)) != g.out {
 				t.Fatalf("SSSE3: Sum256 function: sha256(%s) = %s want %s", g.in, s, hex.EncodeToString(g.out[:]))
 			}
@@ -2277,8 +2277,8 @@ func TestSize(t *testing.T) {
 
 func TestBlockSize(t *testing.T) {
 	c := New()
-	if got := c.BlockSize(); got != BlockSize {
-		t.Errorf("BlockSize = %d want %d", got, BlockSize)
+	if got := c.BlockSize(); got != BlockSize64 {
+		t.Errorf("BlockSize64 = %d want %d", got, BlockSize64)
 	}
 }
 

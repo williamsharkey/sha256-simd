@@ -27,41 +27,41 @@ import (
 // Size - The size of a SHA256 checksum in bytes.
 const Size = 32
 
-// BlockSize - The blocksize of SHA256 in bytes.
-const BlockSize = 64
+// BlockSize64 - The blocksize of SHA256 in bytes.
+const BlockSize64 = 64
 
 const (
-	chunk = BlockSize
-	init0 = 0x6A09E667
-	init1 = 0xBB67AE85
-	init2 = 0x3C6EF372
-	init3 = 0xA54FF53A
-	init4 = 0x510E527F
-	init5 = 0x9B05688C
-	init6 = 0x1F83D9AB
-	init7 = 0x5BE0CD19
+	Chunk64 = BlockSize64
+	init0   = 0x6A09E667
+	init1   = 0xBB67AE85
+	init2   = 0x3C6EF372
+	init3   = 0xA54FF53A
+	init4   = 0x510E527F
+	init5   = 0x9B05688C
+	init6   = 0x1F83D9AB
+	init7   = 0x5BE0CD19
 )
 
 // Sha256Digest represents the partial evaluation of a checksum.
 type Sha256Digest struct {
-	h   [8]uint32
-	x   [chunk]byte
-	nx  int
-	len uint64
+	H     [8]uint32
+	Block [Chunk64]byte
+	Nx    int
+	Len   uint64
 }
 
 // Reset Sha256Digest back to default
 func (d *Sha256Digest) Reset() {
-	d.h[0] = init0
-	d.h[1] = init1
-	d.h[2] = init2
-	d.h[3] = init3
-	d.h[4] = init4
-	d.h[5] = init5
-	d.h[6] = init6
-	d.h[7] = init7
-	d.nx = 0
-	d.len = 0
+	d.H[0] = init0
+	d.H[1] = init1
+	d.H[2] = init2
+	d.H[3] = init3
+	d.H[4] = init4
+	d.H[5] = init5
+	d.H[6] = init6
+	d.H[7] = init7
+	d.Nx = 0
+	d.Len = 0
 }
 
 type blockfuncType int
@@ -142,28 +142,28 @@ func Sum256Reuse(d Sha256Digest, data []byte) (result [Size]byte) {
 func (d *Sha256Digest) Size() int { return Size }
 
 // Return blocksize of checksum
-func (d *Sha256Digest) BlockSize() int { return BlockSize }
+func (d *Sha256Digest) BlockSize() int { return BlockSize64 }
 
 // Write to Sha256Digest
 func (d *Sha256Digest) Write(p []byte) (nn int, err error) {
 	nn = len(p)
-	d.len += uint64(nn)
-	if d.nx > 0 {
-		n := copy(d.x[d.nx:], p)
-		d.nx += n
-		if d.nx == chunk {
-			block(d, d.x[:])
-			d.nx = 0
+	d.Len += uint64(nn)
+	if d.Nx > 0 {
+		n := copy(d.Block[d.Nx:], p)
+		d.Nx += n
+		if d.Nx == Chunk64 {
+			block(d, d.Block[:])
+			d.Nx = 0
 		}
 		p = p[n:]
 	}
-	if len(p) >= chunk {
-		n := len(p) &^ (chunk - 1)
+	if len(p) >= Chunk64 {
+		n := len(p) &^ (Chunk64 - 1)
 		block(d, p[:n])
 		p = p[n:]
 	}
 	if len(p) > 0 {
-		d.nx = copy(d.x[:], p)
+		d.Nx = copy(d.Block[:], p)
 	}
 	return
 }
@@ -178,10 +178,10 @@ func (d *Sha256Digest) Sum(in []byte) []byte {
 
 // Intermediate checksum function
 func (d *Sha256Digest) CheckSum() (digest [Size]byte) {
-	n := d.nx
+	n := d.Nx
 
 	var k [64]byte
-	copy(k[:], d.x[:n])
+	copy(k[:], d.Block[:n])
 
 	k[n] = 0x80
 
@@ -255,40 +255,40 @@ func (d *Sha256Digest) CheckSum() (digest [Size]byte) {
 		k[62] = 0
 		k[63] = 0
 	}
-	binary.BigEndian.PutUint64(k[56:64], uint64(d.len)<<3)
+	binary.BigEndian.PutUint64(k[56:64], uint64(d.Len)<<3)
 	block(d, k[:])
 
 	{
 		const i = 0
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 1
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 2
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 3
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 4
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 5
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 6
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 7
-		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.h[i])
+		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 
 	return
@@ -312,8 +312,8 @@ func block(dig *Sha256Digest, p []byte) {
 
 func blockGeneric(dig *Sha256Digest, p []byte) {
 	var w [64]uint32
-	h0, h1, h2, h3, h4, h5, h6, h7 := dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7]
-	for len(p) >= chunk {
+	h0, h1, h2, h3, h4, h5, h6, h7 := dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7]
+	for len(p) >= Chunk64 {
 		// Can interlace the computation of w with the
 		// rounds below if needed for speed.
 		for i := 0; i < 16; i++ {
@@ -354,10 +354,10 @@ func blockGeneric(dig *Sha256Digest, p []byte) {
 		h6 += g
 		h7 += h
 
-		p = p[chunk:]
+		p = p[Chunk64:]
 	}
 
-	dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7] = h0, h1, h2, h3, h4, h5, h6, h7
+	dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7] = h0, h1, h2, h3, h4, h5, h6, h7
 }
 
 var _K = []uint32{

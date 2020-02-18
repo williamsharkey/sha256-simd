@@ -46,7 +46,7 @@ func NewAvx512(a512srv *Avx512Server) hash.Hash {
 type Avx512Digest struct {
 	uid     uint64
 	a512srv *Avx512Server
-	x       [chunk]byte
+	x       [Chunk64]byte
 	nx      int
 	len     uint64
 	final   bool
@@ -56,8 +56,8 @@ type Avx512Digest struct {
 // Size - Return size of checksum
 func (d *Avx512Digest) Size() int { return Size }
 
-// BlockSize - Return blocksize of checksum
-func (d Avx512Digest) BlockSize() int { return BlockSize }
+// BlockSize64 - Return blocksize of checksum
+func (d Avx512Digest) BlockSize() int { return BlockSize64 }
 
 // Reset - reset sha Sha256Digest to its initial values
 func (d *Avx512Digest) Reset() {
@@ -79,14 +79,14 @@ func (d *Avx512Digest) Write(p []byte) (nn int, err error) {
 	if d.nx > 0 {
 		n := copy(d.x[d.nx:], p)
 		d.nx += n
-		if d.nx == chunk {
+		if d.nx == Chunk64 {
 			d.a512srv.blocksCh <- blockInput{uid: d.uid, msg: d.x[:]}
 			d.nx = 0
 		}
 		p = p[n:]
 	}
-	if len(p) >= chunk {
-		n := len(p) &^ (chunk - 1)
+	if len(p) >= Chunk64 {
+		n := len(p) &^ (Chunk64 - 1)
 		d.a512srv.blocksCh <- blockInput{uid: d.uid, msg: p[:n]}
 		p = p[n:]
 	}

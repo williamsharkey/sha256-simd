@@ -28,10 +28,10 @@ func blockArm(h []uint32, message []uint8)
 
 func blockArmGo(dig *Sha256Digest, p []byte) {
 
-	h := []uint32{dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7]}
+	h := []uint32{dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7]}
 
 	blockArm(h[:], p[:])
 
-	dig.h[0], dig.h[1], dig.h[2], dig.h[3], dig.h[4], dig.h[5], dig.h[6], dig.h[7] = h[0], h[1], h[2], h[3], h[4],
+	dig.H[0], dig.H[1], dig.H[2], dig.H[3], dig.H[4], dig.H[5], dig.H[6], dig.H[7] = h[0], h[1], h[2], h[3], h[4],
 		h[5], h[6], h[7]
 }
