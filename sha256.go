@@ -378,129 +378,37 @@ func (d *Sha256Digest) CheckSumLessThanOrEqual(cmp [32]byte) bool {
 	binary.BigEndian.PutUint64(k[56:64], uint64(d.Len)<<3)
 	block(d, k[:])
 
-	{
-		const i = 0
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
-		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
-	{
-		const i = 1
+	var a, b byte
+	for i := 0; i < len(d.H); i++ {
 
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
+		a = byte(d.H[i] >> 24)
+		b = cmp[i*4+0]
+		if a != b {
+			return a < b
 		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
-	{
-		const i = 2
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
-		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
-	{
-		const i = 3
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
-		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
-	{
-		const i = 4
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
-		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
-	{
-		const i = 5
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
-		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
-	{
-		const i = 6
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
-		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
-	{
-		const i = 7
-		if byte(d.H[i]>>24) > cmp[i*4+0] {
-			return false
-		}
-		if byte(d.H[i]>>16) > cmp[i*4+1] {
-			return false
-		}
-		if byte(d.H[i]>>8) > cmp[i*4+2] {
-			return false
-		}
-		if byte(d.H[i]) > cmp[i*4+3] {
-			return false
-		}
-	}
 
+		a = byte(d.H[i] >> 16)
+		b = cmp[i*4+1]
+		if a != b {
+			return a < b
+		}
+
+		a = byte(d.H[i] >> 8)
+		b = cmp[i*4+2]
+		if a != b {
+			return a < b
+		}
+
+		a = byte(d.H[i])
+		b = cmp[i*4+3]
+		if a != b {
+			return a < b
+		}
+
+	}
+	// equal
 	return true
+
 }
 
 func block(dig *Sha256Digest, p []byte) {
