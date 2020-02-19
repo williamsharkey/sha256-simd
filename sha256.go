@@ -260,10 +260,12 @@ func (d *Sha256Digest) CheckSum() (digest [Size]byte) {
 
 	{
 		const i = 0
+		//fmt.Printf("%X",digest[i*4:i*4+4])
 		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
 		const i = 1
+		//fmt.Printf("%X",digest[i*4:i*4+4])
 		binary.BigEndian.PutUint32(digest[i*4:i*4+4], d.H[i])
 	}
 	{
@@ -292,6 +294,213 @@ func (d *Sha256Digest) CheckSum() (digest [Size]byte) {
 	}
 
 	return
+}
+
+// Intermediate checksum function
+func (d *Sha256Digest) CheckSumLessThanOrEqual(cmp [32]byte) bool {
+	n := d.Nx
+
+	var k [64]byte
+	copy(k[:], d.Block[:n])
+
+	k[n] = 0x80
+
+	if n >= 56 {
+		block(d, k[:])
+
+		// clear block buffer - go compiles this to optimal 1x xorps + 4x movups
+		// unfortunately expressing this more succinctly results in much worse code
+		k[0] = 0
+		k[1] = 0
+		k[2] = 0
+		k[3] = 0
+		k[4] = 0
+		k[5] = 0
+		k[6] = 0
+		k[7] = 0
+		k[8] = 0
+		k[9] = 0
+		k[10] = 0
+		k[11] = 0
+		k[12] = 0
+		k[13] = 0
+		k[14] = 0
+		k[15] = 0
+		k[16] = 0
+		k[17] = 0
+		k[18] = 0
+		k[19] = 0
+		k[20] = 0
+		k[21] = 0
+		k[22] = 0
+		k[23] = 0
+		k[24] = 0
+		k[25] = 0
+		k[26] = 0
+		k[27] = 0
+		k[28] = 0
+		k[29] = 0
+		k[30] = 0
+		k[31] = 0
+		k[32] = 0
+		k[33] = 0
+		k[34] = 0
+		k[35] = 0
+		k[36] = 0
+		k[37] = 0
+		k[38] = 0
+		k[39] = 0
+		k[40] = 0
+		k[41] = 0
+		k[42] = 0
+		k[43] = 0
+		k[44] = 0
+		k[45] = 0
+		k[46] = 0
+		k[47] = 0
+		k[48] = 0
+		k[49] = 0
+		k[50] = 0
+		k[51] = 0
+		k[52] = 0
+		k[53] = 0
+		k[54] = 0
+		k[55] = 0
+		k[56] = 0
+		k[57] = 0
+		k[58] = 0
+		k[59] = 0
+		k[60] = 0
+		k[61] = 0
+		k[62] = 0
+		k[63] = 0
+	}
+	binary.BigEndian.PutUint64(k[56:64], uint64(d.Len)<<3)
+	block(d, k[:])
+
+	{
+		const i = 0
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+	{
+		const i = 1
+
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+	{
+		const i = 2
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+	{
+		const i = 3
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+	{
+		const i = 4
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+	{
+		const i = 5
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+	{
+		const i = 6
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+	{
+		const i = 7
+		if byte(d.H[i]>>24) > cmp[i*4+0] {
+			return false
+		}
+		if byte(d.H[i]>>16) > cmp[i*4+1] {
+			return false
+		}
+		if byte(d.H[i]>>8) > cmp[i*4+2] {
+			return false
+		}
+		if byte(d.H[i]) > cmp[i*4+3] {
+			return false
+		}
+	}
+
+	return true
 }
 
 func block(dig *Sha256Digest, p []byte) {
